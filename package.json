@@ -1,0 +1,36 @@
+{
+  "name": "myide",
+  "version": "1.0.0",
+  "description": "",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "electron --no-sandbox ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "lucide-react": "^1.41.0",
+    "monaco-editor": "^0.56.0",
+    "monaco-editor-textmate": "^4.0.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tm-grammars": "^1.32.13",
+    "tm-themes": "^1.12.10",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "electron": "^44.2.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  }
+}

@@ -1,0 +1,159 @@
+/* Main Theme Tokens & Utilities */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg-dark-base: #121316;
+  --bg-dark-surface: #1a1b20;
+  --bg-dark-elevated: #22242b;
+  --bg-dark-border: #2e313b;
+  --editor-bg: #1e1e1e;
+
+  --accent-primary: #007acc;
+  --accent-primary-hover: #0098ff;
+  --accent-glow: rgba(0, 122, 204, 0.25);
+  --accent-green: #388a34;
+  --accent-green-hover: #4ec946;
+  --accent-amber: #d7ba7d;
+  --accent-red: #f44747;
+
+  --text-primary: #e6e6e6;
+  --text-secondary: #9da5b4;
+  --text-muted: #5c6370;
+
+  --status-bar-bg: #007acc;
+  --status-bar-fg: #ffffff;
+  --titlebar-bg: #18191f;
+  --tab-active-bg: #1e1e1e;
+  --tab-inactive-bg: #141519;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(90, 93, 94, 0.35);
+  border-radius: 0;
+  border: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(115, 118, 120, 0.5);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgba(135, 138, 140, 0.65);
+}
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
+
+/* Toasts */
+#toast-container {
+  position: fixed;
+  bottom: 36px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-dark-elevated);
+  border: 1px solid var(--bg-dark-border);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
+  font-size: 13px;
+  pointer-events: auto;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.toast.fade-out {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.toast-success {
+  border-color: rgba(78, 201, 70, 0.4);
+}
+.toast-success .toast-icon {
+  color: #4ec946;
+  font-weight: bold;
+}
+
+.toast-error {
+  border-color: rgba(244, 71, 71, 0.4);
+}
+.toast-error .toast-icon {
+  color: #f44747;
+  font-weight: bold;
+}
+
+.toast-info .toast-icon {
+  color: var(--accent-primary-hover);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

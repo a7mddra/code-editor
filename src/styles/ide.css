@@ -1,0 +1,464 @@
+/* IDE View Styling - Authentic VS Code Aesthetics */
+
+#ide-view {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--editor-bg);
+  overflow: hidden;
+}
+
+/* Custom Titlebar */
+.ide-titlebar {
+  height: 36px;
+  min-height: 36px;
+  background-color: var(--titlebar-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  -webkit-app-region: drag;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  -webkit-app-region: no-drag;
+}
+
+.titlebar-app-icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--accent-primary-hover);
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+}
+
+.breadcrumbs-trail {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.titlebar-center {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.titlebar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+}
+
+.win-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  width: 28px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+
+.win-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.win-btn.close:hover {
+  background: var(--accent-red);
+  color: #ffffff;
+}
+
+/* Workspace layout */
+.ide-workspace {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  position: relative;
+}
+
+/* Activity Bar */
+.activity-bar {
+  width: 48px;
+  background-color: #141519;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+  gap: 12px;
+  z-index: 2;
+}
+
+.activity-item {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
+}
+
+.activity-item:hover {
+  color: var(--text-primary);
+}
+
+.activity-item.active {
+  color: #ffffff;
+}
+
+.activity-item.active::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background-color: var(--accent-primary);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Editor Main Column */
+.editor-main-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--editor-bg);
+}
+
+/* Tab Bar & Action Bar */
+.ide-header-bar {
+  height: 38px;
+  min-height: 38px;
+  background-color: var(--tab-inactive-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 0;
+}
+
+.tab-strip {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.editor-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  background-color: var(--tab-active-bg);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid var(--accent-primary);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  position: relative;
+}
+
+.tab-icon {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+}
+
+.tab-title {
+  font-weight: 500;
+}
+
+.tab-dirty-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-amber);
+  display: none;
+}
+
+.tab-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 4px;
+  transition: all 0.15s;
+}
+
+.tab-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+}
+
+/* Header Action Buttons */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-header:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Save Button */
+.btn-save {
+  background: #1e3a5f;
+  border-color: #2b578c;
+  color: #79b8ff;
+}
+
+.btn-save:hover {
+  background: #254a78;
+}
+
+.btn-save.is-dirty {
+  background: #007acc;
+  border-color: #0098ff;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 122, 204, 0.6);
+  animation: pulseDirty 2s infinite ease-in-out;
+}
+
+@keyframes pulseDirty {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(0, 122, 204, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(0, 152, 255, 0.8);
+  }
+}
+
+/* Close to Home Button */
+.btn-close-ide {
+  background: rgba(244, 71, 71, 0.12);
+  border-color: rgba(244, 71, 71, 0.25);
+  color: #ff7b72;
+}
+
+.btn-close-ide:hover {
+  background: rgba(244, 71, 71, 0.25);
+}
+
+.theme-dropdown {
+  background: #18191f;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  outline: none;
+  cursor: pointer;
+}
+
+.theme-dropdown:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: var(--text-primary);
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.icon-btn.active {
+  background: rgba(0, 122, 204, 0.2);
+  color: var(--accent-primary-hover);
+}
+
+/* Monaco Editor Container */
+#editor-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--editor-bg);
+}
+
+/* Minimap Canvas & Background Styling */
+.monaco-editor,
+.monaco-editor .overflow-guard,
+.monaco-editor .minimap {
+  background-color: var(--editor-bg) !important;
+}
+
+/* Minimap code text visibility: fully crisp and opaque */
+.monaco-editor .minimap canvas {
+  opacity: 1 !important;
+}
+
+/* The decorations canvas sits DIRECTLY ON TOP of the code canvas - MUST be transparent */
+.monaco-editor .minimap-decorations-layer {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Minimap Slider - Dark Mode, Sharp Corners (no border-radius) */
+.monaco-editor .minimap-slider,
+.monaco-editor .minimap-slider .minimap-slider-horizontal {
+  background: rgba(90, 93, 94, 0.08) !important;
+  background-color: rgba(90, 93, 94, 0.08) !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.monaco-editor .minimap-slider:hover,
+.monaco-editor .minimap-slider:hover .minimap-slider-horizontal {
+  background: rgba(115, 118, 120, 0.1) !important;
+  background-color: rgba(115, 118, 120, 0.1) !important;
+}
+
+.monaco-editor .minimap-slider.active,
+.monaco-editor .minimap-slider.active .minimap-slider-horizontal {
+  background: rgba(135, 138, 140, 0.14) !important;
+  background-color: rgba(135, 138, 140, 0.14) !important;
+}
+
+/* Monaco Scrollbars - Dark Mode, Sharp Corners (no border-radius) */
+.monaco-editor .scrollbar,
+.monaco-editor .monaco-scrollable-element > .scrollbar {
+  background: transparent !important;
+}
+
+.monaco-editor .scrollbar .slider,
+.monaco-editor .monaco-scrollable-element > .scrollbar > .slider {
+  background: rgba(90, 93, 94, 0.35) !important;
+  background-color: rgba(90, 93, 94, 0.35) !important;
+  border-radius: 0 !important;
+}
+
+.monaco-editor .scrollbar .slider:hover,
+.monaco-editor .monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: rgba(115, 118, 120, 0.5) !important;
+  background-color: rgba(115, 118, 120, 0.5) !important;
+}
+
+.monaco-editor .scrollbar .slider.active,
+.monaco-editor .monaco-scrollable-element > .scrollbar > .slider.active {
+  background: rgba(135, 138, 140, 0.65) !important;
+  background-color: rgba(135, 138, 140, 0.65) !important;
+}
+
+/* Status Bar */
+.ide-statusbar {
+  height: 24px;
+  min-height: 24px;
+  background-color: var(--status-bar-bg);
+  color: var(--status-bar-fg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  font-size: 11px;
+  font-family: var(--font-sans);
+  z-index: 10;
+}
+
+.statusbar-left,
+.statusbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: default;
+  transition: background 0.15s;
+}
+
+.status-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.status-branch {
+  font-weight: 500;
+}
+
+.status-clean {
+  color: #bbf7d0;
+}
+
+.status-modified {
+  color: #fef08a;
+  font-weight: 600;
+}
+
+.status-pill {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
