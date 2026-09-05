@@ -45,7 +45,7 @@ function createWindow() {
     minWidth: 800,
     minHeight: 520,
     backgroundColor: "#1e1e1e",
-    frame: false,
+    frame: true,
     titleBarStyle: "default",
     title: "Monaco IDE - TextMate Powered",
     webPreferences: {
