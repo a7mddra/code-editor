@@ -1,6 +1,6 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron");
-const path = require("path");
-const fs = require("fs");
+import { app, BrowserWindow, ipcMain, dialog, Menu } from "electron";
+import path from "path";
+import fs from "fs";
 
 let mainWindow = null;
 
@@ -49,7 +49,7 @@ function createWindow() {
     titleBarStyle: "default",
     title: "Monaco IDE - TextMate Powered",
     webPreferences: {
-      preload: path.join(__dirname, "preload.cjs"),
+      preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
@@ -230,22 +230,6 @@ ipcMain.handle("file:saveAs", async (_, { defaultName, content }) => {
   }
 });
 
-// 5. Window Controls
-ipcMain.handle("window:minimize", () => {
-  mainWindow?.minimize();
-});
-
-ipcMain.handle("window:maximize", () => {
-  if (mainWindow?.isMaximized()) {
-    mainWindow.unmaximize();
-  } else {
-    mainWindow?.maximize();
-  }
-});
-
-ipcMain.handle("window:close", () => {
-  mainWindow?.close();
-});
 
 app.whenReady().then(createWindow);
 

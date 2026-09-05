@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as monaco from "monaco-editor";
-import { OpenedFile } from "../types";
-import { getLanguageByExtension } from "../languages";
+import { OpenedFile } from "./types";
+import { getLanguageByExtension } from "./languages";
 import {
   THEME_LOADERS,
   wireLanguageGrammar,
   setTheme,
-} from "../textmate-engine";
+} from "./textmate-engine";
 
 interface IdeProps {
   file: OpenedFile;
@@ -40,7 +40,7 @@ export const Ide: React.FC<IdeProps> = ({
     column: 1,
     selectedLength: 0,
   });
-  const [isWordWrap, setIsWordWrap] = useState(false);
+
   const [isMinimap, setIsMinimap] = useState(true);
   const [grammarLoaded, setGrammarLoaded] = useState(false);
   const [fontSize, setFontSize] = useState(14);
@@ -135,12 +135,18 @@ export const Ide: React.FC<IdeProps> = ({
     });
 
     // Override Monaco's native Indent/Outdent shortcuts for font sizing
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.BracketRight, () => {
-      setFontSize((prev) => Math.min(prev + 2, 48));
-    });
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.BracketLeft, () => {
-      setFontSize((prev) => Math.max(prev - 2, 8));
-    });
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.BracketRight,
+      () => {
+        setFontSize((prev) => Math.min(prev + 2, 48));
+      },
+    );
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.BracketLeft,
+      () => {
+        setFontSize((prev) => Math.max(prev - 2, 8));
+      },
+    );
 
     return () => {
       cursorSub.dispose();
@@ -181,14 +187,6 @@ export const Ide: React.FC<IdeProps> = ({
     }
   }, [onSaveAs]);
 
-  const handleToggleWrap = () => {
-    if (editorRef.current) {
-      const next = !isWordWrap;
-      setIsWordWrap(next);
-      editorRef.current.updateOptions({ wordWrap: next ? "on" : "off" });
-    }
-  };
-
   const handleToggleMinimap = () => {
     if (editorRef.current) {
       const next = !isMinimap;
@@ -219,17 +217,17 @@ export const Ide: React.FC<IdeProps> = ({
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
-        if (e.key === ']') {
+        if (e.key === "]") {
           e.preventDefault();
           setFontSize((prev) => Math.min(prev + 2, 48));
-        } else if (e.key === '[') {
+        } else if (e.key === "[") {
           e.preventDefault();
           setFontSize((prev) => Math.max(prev - 2, 8));
         }
       }
     };
-    window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
   useEffect(() => {

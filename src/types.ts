@@ -15,14 +15,6 @@ export interface OpenedFile {
   mtime?: number;
 }
 
-export interface RecentFile {
-  filePath: string;
-  fileName: string;
-  extension: string;
-  size?: number;
-  lastOpened: number;
-}
-
 export interface ElectronFileResult {
   canceled: boolean;
   filePath?: string;
@@ -39,14 +31,24 @@ export interface ElectronAPI {
   openFileDialog: () => Promise<ElectronFileResult>;
   readFile: (filePath: string) => Promise<ElectronFileResult>;
   saveFile: (filePath: string, content: string) => Promise<ElectronFileResult>;
-  saveFileAs: (defaultName: string, content: string) => Promise<ElectronFileResult>;
-  windowAction: (action: 'minimize' | 'maximize' | 'close') => Promise<void>;
-  showFileMenu?: (bounds: { x: number, y: number }) => Promise<void>;
-  showEditMenu?: (bounds: { x: number, y: number }) => Promise<void>;
-  showViewMenu?: (args: { bounds: { x: number, y: number }, themes: any, currentTheme: string, isMinimap: boolean }) => Promise<void>;
+  saveFileAs: (
+    defaultName: string,
+    content: string,
+  ) => Promise<ElectronFileResult>;
+
+  showFileMenu?: (bounds: { x: number; y: number }) => Promise<void>;
+  showEditMenu?: (bounds: { x: number; y: number }) => Promise<void>;
+  showViewMenu?: (args: {
+    bounds: { x: number; y: number };
+    themes: any;
+    currentTheme: string;
+    isMinimap: boolean;
+  }) => Promise<void>;
   onMenuAction?: (callback: (action: string) => void) => () => void;
   getInitialFile?: () => Promise<ElectronFileResult | null>;
-  onOpenInitialFile?: (callback: (data: ElectronFileResult) => void) => () => void;
+  onOpenInitialFile?: (
+    callback: (data: ElectronFileResult) => void,
+  ) => () => void;
   isElectron?: boolean;
 }
 

@@ -4,8 +4,17 @@ import electron from 'electron';
 import path from 'path';
 
 async function startDev() {
+  // Build electron first in watch mode
+  const { build } = await import('vite');
+  await build({
+    configFile: path.resolve(process.cwd(), 'vite.electron.config.mts'),
+    build: {
+      watch: {} // Leave watcher active
+    }
+  });
+
   const server = await createServer({
-    configFile: path.resolve(process.cwd(), 'vite.config.ts')
+    configFile: path.resolve(process.cwd(), 'vite.config.mts')
   });
 
   await server.listen();

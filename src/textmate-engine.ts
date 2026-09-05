@@ -1,58 +1,68 @@
-import * as monaco from 'monaco-editor';
-import { loadWASM, createOnigScanner, createOnigString } from 'vscode-oniguruma';
-import { Registry, INITIAL, IGrammar, StateStack, IRawTheme } from 'vscode-textmate';
+import * as monaco from "monaco-editor";
+import {
+  loadWASM,
+  createOnigScanner,
+  createOnigString,
+} from "vscode-oniguruma";
+import {
+  Registry,
+  INITIAL,
+  IGrammar,
+  StateStack,
+  IRawTheme,
+} from "vscode-textmate";
 
 // Grammar loaders
 const GRAMMAR_LOADERS: Record<string, () => Promise<any>> = {
-  markdown: () => import('tm-grammars/grammars/markdown.json'),
-  csv: () => import('tm-grammars/grammars/csv.json'),
-  json: () => import('tm-grammars/grammars/json.json'),
-  xml: () => import('tm-grammars/grammars/xml.json'),
-  yaml: () => import('tm-grammars/grammars/yaml.json'),
-  toml: () => import('tm-grammars/grammars/toml.json'),
-  ini: () => import('tm-grammars/grammars/ini.json'),
-  html: () => import('tm-grammars/grammars/html.json'),
-  css: () => import('tm-grammars/grammars/css.json'),
-  javascript: () => import('tm-grammars/grammars/javascript.json'),
-  typescript: () => import('tm-grammars/grammars/typescript.json'),
-  jsx: () => import('tm-grammars/grammars/jsx.json'),
-  tsx: () => import('tm-grammars/grammars/tsx.json'),
-  shellscript: () => import('tm-grammars/grammars/shellscript.json'),
-  fish: () => import('tm-grammars/grammars/fish.json'),
-  python: () => import('tm-grammars/grammars/python.json'),
-  rust: () => import('tm-grammars/grammars/rust.json'),
-  go: () => import('tm-grammars/grammars/go.json'),
-  java: () => import('tm-grammars/grammars/java.json'),
-  c: () => import('tm-grammars/grammars/c.json'),
-  cpp: () => import('tm-grammars/grammars/cpp.json'),
-  sql: () => import('tm-grammars/grammars/sql.json'),
-  log: () => import('tm-grammars/grammars/log.json')
+  markdown: () => import("tm-grammars/grammars/markdown.json"),
+  csv: () => import("tm-grammars/grammars/csv.json"),
+  json: () => import("tm-grammars/grammars/json.json"),
+  xml: () => import("tm-grammars/grammars/xml.json"),
+  yaml: () => import("tm-grammars/grammars/yaml.json"),
+  toml: () => import("tm-grammars/grammars/toml.json"),
+  ini: () => import("tm-grammars/grammars/ini.json"),
+  html: () => import("tm-grammars/grammars/html.json"),
+  css: () => import("tm-grammars/grammars/css.json"),
+  javascript: () => import("tm-grammars/grammars/javascript.json"),
+  typescript: () => import("tm-grammars/grammars/typescript.json"),
+  jsx: () => import("tm-grammars/grammars/jsx.json"),
+  tsx: () => import("tm-grammars/grammars/tsx.json"),
+  shellscript: () => import("tm-grammars/grammars/shellscript.json"),
+  fish: () => import("tm-grammars/grammars/fish.json"),
+  python: () => import("tm-grammars/grammars/python.json"),
+  rust: () => import("tm-grammars/grammars/rust.json"),
+  go: () => import("tm-grammars/grammars/go.json"),
+  java: () => import("tm-grammars/grammars/java.json"),
+  c: () => import("tm-grammars/grammars/c.json"),
+  cpp: () => import("tm-grammars/grammars/cpp.json"),
+  sql: () => import("tm-grammars/grammars/sql.json"),
+  log: () => import("tm-grammars/grammars/log.json"),
 };
 
 const SCOPE_TO_KEY: Record<string, string> = {
-  'text.html.markdown': 'markdown',
-  'text.csv': 'csv',
-  'source.json': 'json',
-  'text.xml': 'xml',
-  'source.yaml': 'yaml',
-  'source.toml': 'toml',
-  'source.ini': 'ini',
-  'text.html.basic': 'html',
-  'source.css': 'css',
-  'source.js': 'javascript',
-  'source.ts': 'typescript',
-  'source.js.jsx': 'jsx',
-  'source.tsx': 'tsx',
-  'source.shell': 'shellscript',
-  'source.fish': 'fish',
-  'source.python': 'python',
-  'source.rust': 'rust',
-  'source.go': 'go',
-  'source.java': 'java',
-  'source.c': 'c',
-  'source.cpp': 'cpp',
-  'source.sql': 'sql',
-  'text.log': 'log'
+  "text.html.markdown": "markdown",
+  "text.csv": "csv",
+  "source.json": "json",
+  "text.xml": "xml",
+  "source.yaml": "yaml",
+  "source.toml": "toml",
+  "source.ini": "ini",
+  "text.html.basic": "html",
+  "source.css": "css",
+  "source.js": "javascript",
+  "source.ts": "typescript",
+  "source.js.jsx": "jsx",
+  "source.tsx": "tsx",
+  "source.shell": "shellscript",
+  "source.fish": "fish",
+  "source.python": "python",
+  "source.rust": "rust",
+  "source.go": "go",
+  "source.java": "java",
+  "source.c": "c",
+  "source.cpp": "cpp",
+  "source.sql": "sql",
+  "text.log": "log",
 };
 
 export interface ThemeOption {
@@ -62,64 +72,67 @@ export interface ThemeOption {
 }
 
 export const THEME_LOADERS: Record<string, ThemeOption> = {
-  'vesper': {
-    name: 'Vesper (Default)',
+  vesper: {
+    name: "Vesper (Default)",
     isDark: true,
-    loader: () => import('tm-themes/themes/vesper.json')
+    loader: () => import("tm-themes/themes/vesper.json"),
   },
-  'dark-plus': {
-    name: 'VS Code Dark+',
+  "dark-plus": {
+    name: "VS Code Dark+",
     isDark: true,
-    loader: () => import('tm-themes/themes/dark-plus.json')
+    loader: () => import("tm-themes/themes/dark-plus.json"),
   },
-  'github-dark': {
-    name: 'GitHub Dark',
+  "github-dark": {
+    name: "GitHub Dark",
     isDark: true,
-    loader: () => import('tm-themes/themes/github-dark.json')
+    loader: () => import("tm-themes/themes/github-dark.json"),
   },
-  'one-dark-pro': {
-    name: 'One Dark Pro',
+  "one-dark-pro": {
+    name: "One Dark Pro",
     isDark: true,
-    loader: () => import('tm-themes/themes/one-dark-pro.json')
+    loader: () => import("tm-themes/themes/one-dark-pro.json"),
   },
-  'monokai': {
-    name: 'Monokai',
+  monokai: {
+    name: "Monokai",
     isDark: true,
-    loader: () => import('tm-themes/themes/monokai.json')
+    loader: () => import("tm-themes/themes/monokai.json"),
   },
-  'dracula': {
-    name: 'Dracula',
+  dracula: {
+    name: "Dracula",
     isDark: true,
-    loader: () => import('tm-themes/themes/dracula.json')
+    loader: () => import("tm-themes/themes/dracula.json"),
   },
-  'tokyo-night': {
-    name: 'Tokyo Night',
+  "tokyo-night": {
+    name: "Tokyo Night",
     isDark: true,
-    loader: () => import('tm-themes/themes/tokyo-night.json')
+    loader: () => import("tm-themes/themes/tokyo-night.json"),
   },
-  'light-plus': {
-    name: 'VS Code Light+',
+  "light-plus": {
+    name: "VS Code Light+",
     isDark: false,
-    loader: () => import('tm-themes/themes/light-plus.json')
-  }
+    loader: () => import("tm-themes/themes/light-plus.json"),
+  },
 };
 
 function normalizeHex(hex: string): string {
   if (!hex) return hex;
   let clean = hex.trim();
-  if (clean.startsWith('#')) {
+  if (clean.startsWith("#")) {
     clean = clean.slice(1);
   }
   if (clean.length === 3) {
-    clean = clean.split('').map((c) => c + c).join('');
+    clean = clean
+      .split("")
+      .map((c) => c + c)
+      .join("");
   }
-  return '#' + clean;
+  return "#" + clean;
 }
 
 let wasmInitialized = false;
 let initPromise: Promise<void> | null = null;
 let registry: Registry | null = null;
-let currentThemeId = 'vesper';
+let currentThemeId = "vesper";
 const loadedGrammars = new Map<string, IGrammar>();
 const registeredLanguages = new Set<string>();
 
@@ -136,21 +149,21 @@ export function initTextMateEngine(initialThemeId?: string): Promise<void> {
 }
 
 async function doInit(): Promise<void> {
-  console.log('[TextMate] Initializing Oniguruma WASM...');
+  console.log("[TextMate] Initializing Oniguruma WASM...");
   try {
-    const wasmResponse = await fetch('./onig.wasm');
+    const wasmResponse = await fetch("./onig.wasm");
     const wasmArrayBuffer = await wasmResponse.arrayBuffer();
     await loadWASM(wasmArrayBuffer);
     wasmInitialized = true;
-    console.log('[TextMate] Oniguruma WASM loaded successfully.');
+    console.log("[TextMate] Oniguruma WASM loaded successfully.");
   } catch (err) {
-    console.error('[TextMate] Failed to initialize WASM:', err);
+    console.error("[TextMate] Failed to initialize WASM:", err);
     throw err;
   }
 
   const onigLib = Promise.resolve({
     createOnigScanner: (sources: string[]) => createOnigScanner(sources),
-    createOnigString: (str: string) => createOnigString(str)
+    createOnigString: (str: string) => createOnigString(str),
   });
 
   registry = new Registry({
@@ -162,11 +175,14 @@ async function doInit(): Promise<void> {
           const mod = await GRAMMAR_LOADERS[key]();
           return mod.default || mod;
         } catch (err) {
-          console.warn(`[TextMate] Error loading grammar for scope ${scopeName}:`, err);
+          console.warn(
+            `[TextMate] Error loading grammar for scope ${scopeName}:`,
+            err,
+          );
         }
       }
       return null;
-    }
+    },
   });
 
   await setTheme(currentThemeId);
@@ -195,35 +211,41 @@ export async function setTheme(themeId: string): Promise<void> {
   const isDark = themeConfig.isDark;
 
   // Extract explicit theme foreground and background with normalization
-  const rawFg = rawTheme.colors?.['editor.foreground'] || (isDark ? '#D4D4D4' : '#24292E');
-  const rawBg = rawTheme.colors?.['editor.background'] || (isDark ? '#1E1E1E' : '#FFFFFF');
+  const rawFg =
+    rawTheme.colors?.["editor.foreground"] || (isDark ? "#D4D4D4" : "#24292E");
+  const rawBg =
+    rawTheme.colors?.["editor.background"] || (isDark ? "#1E1E1E" : "#FFFFFF");
   const fg = normalizeHex(rawFg);
   const bg = normalizeHex(rawBg);
 
   // 1. Define theme in Monaco with explicit rules and minimap background
   monaco.editor.defineTheme(editorThemeName, {
-    base: isDark ? 'vs-dark' : 'vs',
+    base: isDark ? "vs-dark" : "vs",
     inherit: true,
     rules: [
-      { token: '', foreground: fg.replace('#', ''), background: bg.replace('#', '') }
+      {
+        token: "",
+        foreground: fg.replace("#", ""),
+        background: bg.replace("#", ""),
+      },
     ],
     colors: {
       ...(rawTheme.colors || {}),
-      'editor.background': bg,
-      'editor.foreground': fg,
-      'minimap.background': bg,
-      'minimapSlider.background': isDark ? '#79797933' : '#64646420',
-      'minimapSlider.hoverBackground': isDark ? '#79797959' : '#64646438',
-      'minimapSlider.activeBackground': isDark ? '#79797980' : '#64646450',
-      'scrollbarSlider.background': isDark ? '#79797933' : '#64646420',
-      'scrollbarSlider.hoverBackground': isDark ? '#79797959' : '#64646438',
-      'scrollbarSlider.activeBackground': isDark ? '#79797980' : '#64646450',
-      'editorLineNumber.foreground': isDark ? '#858585' : '#747474',
-      'editorLineNumber.activeForeground': isDark ? '#c6c6c6' : '#222222',
-      'editorCursor.foreground': isDark ? '#aeafad' : '#000000',
-      'editor.selectionBackground': isDark ? '#264f78' : '#add6ff',
-      'editor.inactiveSelectionBackground': isDark ? '#3a3d41' : '#e5ebf1'
-    }
+      "editor.background": bg,
+      "editor.foreground": fg,
+      "minimap.background": bg,
+      "minimapSlider.background": isDark ? "#79797933" : "#64646420",
+      "minimapSlider.hoverBackground": isDark ? "#79797959" : "#64646438",
+      "minimapSlider.activeBackground": isDark ? "#79797980" : "#64646450",
+      "scrollbarSlider.background": isDark ? "#79797933" : "#64646420",
+      "scrollbarSlider.hoverBackground": isDark ? "#79797959" : "#64646438",
+      "scrollbarSlider.activeBackground": isDark ? "#79797980" : "#64646450",
+      "editorLineNumber.foreground": isDark ? "#858585" : "#747474",
+      "editorLineNumber.activeForeground": isDark ? "#c6c6c6" : "#222222",
+      "editorCursor.foreground": isDark ? "#aeafad" : "#000000",
+      "editor.selectionBackground": isDark ? "#264f78" : "#add6ff",
+      "editor.inactiveSelectionBackground": isDark ? "#3a3d41" : "#e5ebf1",
+    },
   });
 
   monaco.editor.setTheme(editorThemeName);
@@ -233,20 +255,20 @@ export async function setTheme(themeId: string): Promise<void> {
     const baseSettingsRule = {
       settings: {
         foreground: fg,
-        background: bg
-      }
+        background: bg,
+      },
     };
 
     const tokenColors = rawTheme.tokenColors || rawTheme.settings || [];
 
     registry.setTheme({
       name: rawTheme.name || themeId,
-      settings: [baseSettingsRule, ...tokenColors]
+      settings: [baseSettingsRule, ...tokenColors],
     } as IRawTheme);
 
     const colorMap = registry.getColorMap();
     if (colorMap && colorMap.length > 2) {
-      colorMap[0] = '#00000000';
+      colorMap[0] = "#00000000";
       colorMap[1] = fg;
       colorMap[2] = bg;
       monaco.languages.setColorMap(colorMap);
@@ -254,39 +276,56 @@ export async function setTheme(themeId: string): Promise<void> {
   }
 
   // Update root CSS variables to harmonize titlebar, tab, and statusbar with theme
-  const titleBarBg = rawTheme.colors?.['titleBar.activeBackground'] || (isDark ? '#18191f' : '#f3f3f3');
-  const tabActiveBg = rawTheme.colors?.['tab.activeBackground'] || bg;
-  const tabInactiveBg = rawTheme.colors?.['tab.inactiveBackground'] || (isDark ? '#141519' : '#ececec');
-  const statusBarBg = rawTheme.colors?.['statusBar.background'] || (isDark ? '#007acc' : '#007acc');
-  const statusBarFg = rawTheme.colors?.['statusBar.foreground'] || '#ffffff';
-  const accentColor = rawTheme.colors?.['focusBorder'] || rawTheme.colors?.['activityBarBadge.background'] || (isDark ? '#FFC799' : '#007acc');
+  const titleBarBg =
+    rawTheme.colors?.["titleBar.activeBackground"] ||
+    (isDark ? "#18191f" : "#f3f3f3");
+  const tabActiveBg = rawTheme.colors?.["tab.activeBackground"] || bg;
+  const tabInactiveBg =
+    rawTheme.colors?.["tab.inactiveBackground"] ||
+    (isDark ? "#141519" : "#ececec");
+  const statusBarBg =
+    rawTheme.colors?.["statusBar.background"] ||
+    (isDark ? "#007acc" : "#007acc");
+  const statusBarFg = rawTheme.colors?.["statusBar.foreground"] || "#ffffff";
+  const accentColor =
+    rawTheme.colors?.["focusBorder"] ||
+    rawTheme.colors?.["activityBarBadge.background"] ||
+    (isDark ? "#FFC799" : "#007acc");
 
-  document.documentElement.style.setProperty('--editor-bg', bg);
-  document.documentElement.style.setProperty('--editor-fg', fg);
-  document.documentElement.style.setProperty('--titlebar-bg', titleBarBg);
-  document.documentElement.style.setProperty('--tab-active-bg', tabActiveBg);
-  document.documentElement.style.setProperty('--tab-inactive-bg', tabInactiveBg);
-  document.documentElement.style.setProperty('--status-bar-bg', statusBarBg);
-  document.documentElement.style.setProperty('--status-bar-fg', statusBarFg);
-  document.documentElement.style.setProperty('--accent-primary', accentColor);
+  document.documentElement.style.setProperty("--editor-bg", bg);
+  document.documentElement.style.setProperty("--editor-fg", fg);
+  document.documentElement.style.setProperty("--titlebar-bg", titleBarBg);
+  document.documentElement.style.setProperty("--tab-active-bg", tabActiveBg);
+  document.documentElement.style.setProperty(
+    "--tab-inactive-bg",
+    tabInactiveBg,
+  );
+  document.documentElement.style.setProperty("--status-bar-bg", statusBarBg);
+  document.documentElement.style.setProperty("--status-bar-fg", statusBarFg);
+  document.documentElement.style.setProperty("--accent-primary", accentColor);
 }
 
 /**
  * Ensure a language grammar is loaded and hooked into Monaco's incremental line tokenizer
  */
-export async function wireLanguageGrammar(languageId: string, scopeName?: string | null): Promise<IGrammar | null> {
-  if (!scopeName || languageId === 'plaintext') {
+export async function wireLanguageGrammar(
+  languageId: string,
+  scopeName?: string | null,
+): Promise<IGrammar | null> {
+  if (!scopeName || languageId === "plaintext") {
     return null;
   }
 
   await initTextMateEngine();
   if (!registry) {
-    console.warn('[TextMate] Registry not available after init');
+    console.warn("[TextMate] Registry not available after init");
     return null;
   }
 
   if (!registeredLanguages.has(languageId)) {
-    const existing = monaco.languages.getLanguages().find(l => l.id === languageId);
+    const existing = monaco.languages
+      .getLanguages()
+      .find((l) => l.id === languageId);
     if (!existing) {
       monaco.languages.register({ id: languageId });
     }
@@ -297,7 +336,9 @@ export async function wireLanguageGrammar(languageId: string, scopeName?: string
     return loadedGrammars.get(languageId)!;
   }
 
-  console.log(`[TextMate] Wiring incremental grammar for ${languageId} (${scopeName})...`);
+  console.log(
+    `[TextMate] Wiring incremental grammar for ${languageId} (${scopeName})...`,
+  );
   const grammar = await registry.loadGrammar(scopeName);
   if (!grammar) {
     console.warn(`[TextMate] Could not load grammar for ${scopeName}`);
@@ -310,13 +351,15 @@ export async function wireLanguageGrammar(languageId: string, scopeName?: string
       const result = grammar.tokenizeLine2(line, state as StateStack);
       return {
         tokens: result.tokens,
-        endState: result.ruleStack
+        endState: result.ruleStack,
       };
-    }
+    },
   });
 
   loadedGrammars.set(languageId, grammar);
-  console.log(`[TextMate] Language ${languageId} successfully bound to Monaco TokensProvider!`);
+  console.log(
+    `[TextMate] Language ${languageId} successfully bound to Monaco TokensProvider!`,
+  );
   return grammar;
 }
 

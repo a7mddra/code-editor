@@ -2,7 +2,7 @@
   "name": "myide",
   "version": "1.0.0",
   "description": "",
-  "main": "electron/main.cjs",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "vite build",

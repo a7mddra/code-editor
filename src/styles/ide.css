@@ -29,26 +29,6 @@
   -webkit-app-region: no-drag;
 }
 
-.titlebar-app-icon {
-  width: 18px;
-  height: 18px;
-  fill: var(--accent-primary-hover);
-}
-
-.breadcrumbs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-family: var(--font-sans);
-}
-
-.breadcrumbs-trail {
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
 .titlebar-center {
   font-size: 12px;
   color: var(--text-muted);
@@ -63,31 +43,6 @@
   -webkit-app-region: no-drag;
 }
 
-.win-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  width: 28px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: background 0.15s;
-}
-
-.win-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-}
-
-.win-btn.close:hover {
-  background: var(--accent-red);
-  color: #ffffff;
-}
-
 /* Workspace layout */
 .ide-workspace {
   flex: 1;
@@ -95,8 +50,6 @@
   min-height: 0;
   position: relative;
 }
-
-
 
 /* Editor Main Column */
 .editor-main-col {
@@ -128,46 +81,6 @@
   background-color: var(--accent-amber);
   margin-left: 6px;
   vertical-align: middle;
-}
-
-.theme-dropdown {
-  background: #18191f;
-  color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  outline: none;
-  cursor: pointer;
-}
-
-.theme-dropdown:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-  color: var(--text-primary);
-}
-
-.icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.icon-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-primary);
-}
-
-.icon-btn.active {
-  background: rgba(0, 122, 204, 0.2);
-  color: var(--accent-primary-hover);
 }
 
 /* Monaco Editor Container */
@@ -279,25 +192,4 @@
 
 .status-item:hover {
   background: rgba(255, 255, 255, 0.15);
-}
-
-.status-branch {
-  font-weight: 500;
-}
-
-.status-clean {
-  color: #bbf7d0;
-}
-
-.status-modified {
-  color: #fef08a;
-  font-weight: 600;
-}
-
-.status-pill {
-  background: rgba(0, 0, 0, 0.25);
-  padding: 1px 6px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 600;
 }
