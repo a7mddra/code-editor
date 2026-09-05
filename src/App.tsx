@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { OpenedFile, RecentFile } from './types';
-import { Home } from './components/Home';
+import { OpenedFile } from './types';
 import { Ide } from './components/Ide';
-import { ConfirmModal } from './components/ConfirmModal';
-import { ToastContainer, ToastItem } from './components/Toast';
+
 import { initTextMateEngine, setTheme, THEME_LOADERS } from './textmate-engine';
 import { getLanguageByFileName } from './languages';
 
 const RECENT_FILES_KEY = 'monaco_ide_recent_files';
 const THEME_STORAGE_KEY = 'monaco_ide_theme';
 
+const defaultUntitled = (): OpenedFile => ({
+  filePath: '',
+  fileName: 'Untitled-1',
+  extension: 'txt',
+  content: '',
+  size: 0,
+  mtime: Date.now()
+});
+
 export const App: React.FC = () => {
-  const [view, setView] = useState<'home' | 'ide'>('home');
-  const [activeFile, setActiveFile] = useState<OpenedFile | null>(null);
+  const [activeFile, setActiveFile] = useState<OpenedFile>(defaultUntitled());
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [theme, setCurrentTheme] = useState<string>(() => {
     try {
@@ -21,9 +27,7 @@ export const App: React.FC = () => {
       return 'vesper';
     }
   });
-  const [recentFiles, setRecentFiles] = useState<RecentFile[]>([]);
-  const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
 
   // Initialize engine & load recents
   useEffect(() => {
@@ -31,14 +35,7 @@ export const App: React.FC = () => {
       console.error('[App] Failed to initialize TextMate engine:', err);
     });
 
-    try {
-      const saved = localStorage.getItem(RECENT_FILES_KEY);
-      if (saved) {
-        setRecentFiles(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.error('Failed to load recent files:', e);
-    }
+
 
     if (window.electronAPI?.getInitialFile) {
       window.electronAPI.getInitialFile().then((fileData) => {
@@ -73,36 +70,10 @@ export const App: React.FC = () => {
   }, []);
 
   const addToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
-    const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3200);
+    console.log(`[Toast ${type.toUpperCase()}]: ${message}`);
   };
 
-  const addRecent = (file: OpenedFile) => {
-    setRecentFiles((prev) => {
-      const filtered = prev.filter((f) => f.filePath !== file.filePath);
-      const updated: RecentFile[] = [
-        {
-          filePath: file.filePath,
-          fileName: file.fileName,
-          extension: file.extension,
-          size: file.size,
-          lastOpened: Date.now()
-        },
-        ...filtered
-      ].slice(0, 10);
 
-      try {
-        localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(updated));
-      } catch (e) {
-        console.error('Failed to save recents:', e);
-      }
-
-      return updated;
-    });
-  };
 
   // Open file handler (dialog or specific path)
   const handleOpenFile = async (specifiedPath?: string) => {
@@ -153,30 +124,13 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleFileDrop = async (file: File) => {
-    const electronFilePath = (file as any).path;
-    if (electronFilePath && window.electronAPI) {
-      handleOpenFile(electronFilePath);
-    } else {
-      const content = await file.text();
-      const ext = file.name.split('.').pop() || 'txt';
-      openFileObject({
-        filePath: file.name,
-        fileName: file.name,
-        extension: ext,
-        content,
-        size: file.size,
-        mtime: file.lastModified
-      });
-    }
-  };
+
 
   const openFileObject = (file: OpenedFile) => {
     console.log('[App] Opening file:', file.fileName, file.filePath);
     setActiveFile(file);
     setIsDirty(false);
-    setView('ide');
-    addRecent(file);
+
     const lang = getLanguageByFileName(file.fileName);
     addToast(`Opened ${file.fileName} (${lang.displayName})`, 'success');
   };
@@ -188,14 +142,14 @@ export const App: React.FC = () => {
     if (window.electronAPI && activeFile.filePath) {
       const res = await window.electronAPI.saveFile(activeFile.filePath, content);
       if (res.success) {
-        setActiveFile((prev) => (prev ? { ...prev, content } : null));
+        setActiveFile((prev) => ({ ...prev, content }));
         setIsDirty(false);
         addToast(`Saved ${activeFile.fileName}`, 'success');
       } else {
         addToast(`Failed to save: ${res.error}`, 'error');
       }
     } else {
-      setActiveFile((prev) => (prev ? { ...prev, content } : null));
+      setActiveFile((prev) => ({ ...prev, content }));
       setIsDirty(false);
       addToast(`Saved locally`, 'success');
     }
@@ -218,42 +172,16 @@ export const App: React.FC = () => {
         };
         setActiveFile(newFile);
         setIsDirty(false);
-        addRecent(newFile);
+
         addToast(`Saved as ${newFile.fileName}`, 'success');
       }
     }
   };
 
-  // Close handler (checks dirty state)
+  // Close handler
   const handleClose = () => {
-    if (isDirty) {
-      setIsConfirmOpen(true);
-    } else {
-      setView('home');
-      setActiveFile(null);
-    }
-  };
-
-  const handleConfirmSave = async () => {
-    setIsConfirmOpen(false);
-    if (activeFile) {
-      await handleSave(activeFile.content);
-    }
-    setView('home');
-    setActiveFile(null);
-    addToast(`Closed file`, 'info');
-  };
-
-  const handleConfirmDiscard = () => {
-    setIsConfirmOpen(false);
+    setActiveFile(defaultUntitled());
     setIsDirty(false);
-    setView('home');
-    setActiveFile(null);
-    addToast(`Closed without saving`, 'info');
-  };
-
-  const handleConfirmCancel = () => {
-    setIsConfirmOpen(false);
   };
 
   const handleThemeChange = async (themeId: string) => {
@@ -280,46 +208,28 @@ export const App: React.FC = () => {
         handleOpenFile();
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'w') {
         e.preventDefault();
-        if (view === 'ide') {
-          handleClose();
-        }
+        handleClose();
       }
     };
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [view, isDirty, activeFile]);
+  }, [isDirty, activeFile]);
 
   return (
     <div id="app">
-      {view === 'home' ? (
-        <Home
-          onOpenFile={handleOpenFile}
-          onFileDrop={handleFileDrop}
-          recentFiles={recentFiles}
-        />
-      ) : activeFile ? (
-        <Ide
-          file={activeFile}
-          isDirty={isDirty}
-          theme={theme}
-          onSave={handleSave}
-          onSaveAs={handleSaveAs}
-          onClose={handleClose}
-          onThemeChange={handleThemeChange}
-          onDirtyChange={setIsDirty}
-        />
-      ) : null}
-
-      <ConfirmModal
-        isOpen={isConfirmOpen}
-        fileName={activeFile?.fileName || 'untitled.txt'}
-        onSave={handleConfirmSave}
-        onDiscard={handleConfirmDiscard}
-        onCancel={handleConfirmCancel}
+      <Ide
+        file={activeFile}
+        isDirty={isDirty}
+        theme={theme}
+        onOpenFile={handleOpenFile}
+        onSave={handleSave}
+        onSaveAs={handleSaveAs}
+        onClose={handleClose}
+        onThemeChange={handleThemeChange}
+        onDirtyChange={setIsDirty}
       />
 
-      <ToastContainer toasts={toasts} />
     </div>
   );
 };

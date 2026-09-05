@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
@@ -57,6 +57,8 @@ function createWindow() {
     },
     show: false,
   });
+
+
 
   mainWindow.webContents.on(
     "console-message",
@@ -257,4 +259,56 @@ app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+ipcMain.handle("menu:showFile", (event, bounds) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win) return;
+  const template = [
+    { label: "Open File", accelerator: "CmdOrCtrl+O", click: () => win.webContents.send("menu:action", "openFile") },
+    { label: "Save", accelerator: "CmdOrCtrl+S", click: () => win.webContents.send("menu:action", "save") },
+    { label: "Save As...", accelerator: "CmdOrCtrl+Shift+S", click: () => win.webContents.send("menu:action", "saveAs") },
+    { type: "separator" },
+    { label: "Quit", accelerator: "CmdOrCtrl+Q", role: "quit" }
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  menu.popup({ window: win, x: Math.round(bounds.x), y: Math.round(bounds.y) });
+});
+
+ipcMain.handle("menu:showEdit", (event, bounds) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win) return;
+  const template = [
+    { label: "Undo", accelerator: "CmdOrCtrl+Z", click: () => win.webContents.send("menu:action", "undo") },
+    { label: "Redo", accelerator: "CmdOrCtrl+Shift+Z", click: () => win.webContents.send("menu:action", "redo") },
+    { type: "separator" },
+    { label: "Copy", accelerator: "CmdOrCtrl+C", click: () => win.webContents.send("menu:action", "copy") },
+    { label: "Paste", accelerator: "CmdOrCtrl+V", click: () => win.webContents.send("menu:action", "paste") },
+    { label: "Cut", accelerator: "CmdOrCtrl+X", click: () => win.webContents.send("menu:action", "cut") },
+    { type: "separator" },
+    { label: "Select All", accelerator: "CmdOrCtrl+A", click: () => win.webContents.send("menu:action", "selectAll") }
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  menu.popup({ window: win, x: Math.round(bounds.x), y: Math.round(bounds.y) });
+});
+
+ipcMain.handle("menu:showView", (event, { bounds, themes, currentTheme, isMinimap }) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (!win) return;
+  const themeSubmenu = Object.keys(themes).map(id => ({
+    label: themes[id].name,
+    type: "radio",
+    checked: id === currentTheme,
+    click: () => win.webContents.send("menu:action", `theme:${id}`)
+  }));
+  const template = [
+    { label: "Increase Font Size", accelerator: "CmdOrCtrl+]", click: () => win.webContents.send("menu:action", "zoomIn") },
+    { label: "Decrease Font Size", accelerator: "CmdOrCtrl+[", click: () => win.webContents.send("menu:action", "zoomOut") },
+    { type: "separator" },
+    { label: "Show Minimap", type: "checkbox", checked: isMinimap, click: () => win.webContents.send("menu:action", "toggleMinimap") },
+    { type: "separator" },
+    { label: "Color Theme", submenu: themeSubmenu }
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  menu.popup({ window: win, x: Math.round(bounds.x), y: Math.round(bounds.y) });
 });

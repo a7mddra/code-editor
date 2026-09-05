@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor';
-import { loadWASM, createOnigScanner, createOnigString, IOnigLib } from 'vscode-oniguruma';
+import { loadWASM, createOnigScanner, createOnigString } from 'vscode-oniguruma';
 import { Registry, INITIAL, IGrammar, StateStack, IRawTheme } from 'vscode-textmate';
 
 // Grammar loaders
@@ -62,8 +62,13 @@ export interface ThemeOption {
 }
 
 export const THEME_LOADERS: Record<string, ThemeOption> = {
+  'vesper': {
+    name: 'Vesper (Default)',
+    isDark: true,
+    loader: () => import('tm-themes/themes/vesper.json')
+  },
   'dark-plus': {
-    name: 'VS Code Dark+ (Default)',
+    name: 'VS Code Dark+',
     isDark: true,
     loader: () => import('tm-themes/themes/dark-plus.json')
   },
@@ -91,11 +96,6 @@ export const THEME_LOADERS: Record<string, ThemeOption> = {
     name: 'Tokyo Night',
     isDark: true,
     loader: () => import('tm-themes/themes/tokyo-night.json')
-  },
-  'vesper': {
-    name: 'Vesper',
-    isDark: true,
-    loader: () => import('tm-themes/themes/vesper.json')
   },
   'light-plus': {
     name: 'VS Code Light+',
@@ -148,7 +148,7 @@ async function doInit(): Promise<void> {
     throw err;
   }
 
-  const onigLib: Promise<IOnigLib> = Promise.resolve({
+  const onigLib = Promise.resolve({
     createOnigScanner: (sources: string[]) => createOnigScanner(sources),
     createOnigString: (str: string) => createOnigString(str)
   });

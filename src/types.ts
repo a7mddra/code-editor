@@ -41,6 +41,10 @@ export interface ElectronAPI {
   saveFile: (filePath: string, content: string) => Promise<ElectronFileResult>;
   saveFileAs: (defaultName: string, content: string) => Promise<ElectronFileResult>;
   windowAction: (action: 'minimize' | 'maximize' | 'close') => Promise<void>;
+  showFileMenu?: (bounds: { x: number, y: number }) => Promise<void>;
+  showEditMenu?: (bounds: { x: number, y: number }) => Promise<void>;
+  showViewMenu?: (args: { bounds: { x: number, y: number }, themes: any, currentTheme: string, isMinimap: boolean }) => Promise<void>;
+  onMenuAction?: (callback: (action: string) => void) => () => void;
   getInitialFile?: () => Promise<ElectronFileResult | null>;
   onOpenInitialFile?: (callback: (data: ElectronFileResult) => void) => () => void;
   isElectron?: boolean;
