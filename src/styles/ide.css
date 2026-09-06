@@ -14,7 +14,7 @@
   height: 36px;
   min-height: 36px;
   background-color: var(--titlebar-bg);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--c-raw-024);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -70,7 +70,7 @@
   -webkit-app-region: no-drag;
 }
 .menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--c-raw-025);
   color: var(--text-primary);
 }
 .title-dirty-dot {
@@ -114,8 +114,8 @@
 /* Minimap Slider - Dark Mode, Sharp Corners (no border-radius) */
 .monaco-editor .minimap-slider,
 .monaco-editor .minimap-slider .minimap-slider-horizontal {
-  background: rgba(90, 93, 94, 0.08) !important;
-  background-color: rgba(90, 93, 94, 0.08) !important;
+  background: var(--c-raw-026) !important;
+  background-color: var(--c-raw-026) !important;
   border-radius: 0 !important;
   border: none !important;
   box-shadow: none !important;
@@ -123,14 +123,14 @@
 
 .monaco-editor .minimap-slider:hover,
 .monaco-editor .minimap-slider:hover .minimap-slider-horizontal {
-  background: rgba(115, 118, 120, 0.1) !important;
-  background-color: rgba(115, 118, 120, 0.1) !important;
+  background: var(--c-raw-027) !important;
+  background-color: var(--c-raw-027) !important;
 }
 
 .monaco-editor .minimap-slider.active,
 .monaco-editor .minimap-slider.active .minimap-slider-horizontal {
-  background: rgba(135, 138, 140, 0.14) !important;
-  background-color: rgba(135, 138, 140, 0.14) !important;
+  background: var(--c-raw-028) !important;
+  background-color: var(--c-raw-028) !important;
 }
 
 /* Monaco Scrollbars - Dark Mode, Sharp Corners (no border-radius) */
@@ -141,21 +141,21 @@
 
 .monaco-editor .scrollbar .slider,
 .monaco-editor .monaco-scrollable-element > .scrollbar > .slider {
-  background: rgba(90, 93, 94, 0.35) !important;
-  background-color: rgba(90, 93, 94, 0.35) !important;
+  background: var(--c-raw-021) !important;
+  background-color: var(--c-raw-021) !important;
   border-radius: 0 !important;
 }
 
 .monaco-editor .scrollbar .slider:hover,
 .monaco-editor .monaco-scrollable-element > .scrollbar > .slider:hover {
-  background: rgba(115, 118, 120, 0.5) !important;
-  background-color: rgba(115, 118, 120, 0.5) !important;
+  background: var(--c-raw-022) !important;
+  background-color: var(--c-raw-022) !important;
 }
 
 .monaco-editor .scrollbar .slider.active,
 .monaco-editor .monaco-scrollable-element > .scrollbar > .slider.active {
-  background: rgba(135, 138, 140, 0.65) !important;
-  background-color: rgba(135, 138, 140, 0.65) !important;
+  background: var(--c-raw-023) !important;
+  background-color: var(--c-raw-023) !important;
 }
 
 /* Status Bar */
@@ -191,5 +191,5 @@
 }
 
 .status-item:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--c-raw-029);
 }

@@ -1,34 +1,35 @@
 /* Main Theme Tokens & Utilities */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import "./variables.css";
 
 :root {
-  --bg-dark-base: #121316;
-  --bg-dark-surface: #1a1b20;
-  --bg-dark-elevated: #22242b;
-  --bg-dark-border: #2e313b;
-  --editor-bg: #1e1e1e;
+  --bg-dark-base: var(--c-raw-000);
+  --bg-dark-surface: var(--c-raw-001);
+  --bg-dark-elevated: var(--c-raw-002);
+  --bg-dark-border: var(--c-raw-003);
+  --editor-bg: var(--c-raw-004);
 
-  --accent-primary: #007acc;
-  --accent-primary-hover: #0098ff;
-  --accent-glow: rgba(0, 122, 204, 0.25);
-  --accent-green: #388a34;
-  --accent-green-hover: #4ec946;
-  --accent-amber: #d7ba7d;
-  --accent-red: #f44747;
+  --accent-primary: var(--c-raw-005);
+  --accent-primary-hover: var(--c-raw-006);
+  --accent-glow: var(--c-raw-007);
+  --accent-green: var(--c-raw-008);
+  --accent-green-hover: var(--c-raw-009);
+  --accent-amber: var(--c-raw-010);
+  --accent-red: var(--c-raw-011);
 
-  --text-primary: #e6e6e6;
-  --text-secondary: #9da5b4;
-  --text-muted: #5c6370;
+  --text-primary: var(--c-raw-012);
+  --text-secondary: var(--c-raw-013);
+  --text-muted: var(--c-raw-014);
 
-  --status-bar-bg: #007acc;
-  --status-bar-fg: #ffffff;
-  --titlebar-bg: #18191f;
-  --tab-active-bg: #1e1e1e;
-  --tab-inactive-bg: #141519;
+  --status-bar-bg: var(--c-raw-005);
+  --status-bar-fg: var(--c-raw-015);
+  --titlebar-bg: var(--c-raw-016);
+  --tab-active-bg: var(--c-raw-004);
+  --tab-inactive-bg: var(--c-raw-017);
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 2px 8px var(--c-raw-018);
+  --shadow-md: 0 8px 24px var(--c-raw-019);
+  --shadow-lg: 0 16px 40px var(--c-raw-020);
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -78,17 +79,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(90, 93, 94, 0.35);
+  background: var(--c-raw-021);
   border-radius: 0;
   border: none;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(115, 118, 120, 0.5);
+  background: var(--c-raw-022);
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background: rgba(135, 138, 140, 0.65);
+  background: var(--c-raw-023);
 }
 
 /* Utility classes */
