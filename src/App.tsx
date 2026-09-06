@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { OpenedFile } from "./types";
 import { Ide } from "./Ide";
 
@@ -19,6 +19,17 @@ const defaultUntitled = (): OpenedFile => ({
 export const App: React.FC = () => {
   const [activeFile, setActiveFile] = useState<OpenedFile>(defaultUntitled());
   const [isDirty, setIsDirty] = useState<boolean>(false);
+  const activeFileRef = useRef(activeFile);
+  const isDirtyRef = useRef(isDirty);
+
+  useEffect(() => {
+    activeFileRef.current = activeFile;
+  }, [activeFile]);
+
+  useEffect(() => {
+    isDirtyRef.current = isDirty;
+  }, [isDirty]);
+
   const [theme, setCurrentTheme] = useState<string>(() => {
     try {
       return localStorage.getItem(THEME_STORAGE_KEY) || "vesper";
@@ -138,24 +149,24 @@ export const App: React.FC = () => {
 
   // Save handler
   const handleSave = async (content: string) => {
-    if (!activeFile) return;
+    if (!activeFileRef.current) return false;
 
-    if (window.electronAPI && activeFile.filePath) {
-      const res = await window.electronAPI.saveFile(
-        activeFile.filePath,
-        content,
-      );
+    if (window.electronAPI && window.electronAPI.saveCurrentFile) {
+      const res = await window.electronAPI.saveCurrentFile(content);
       if (res.success) {
         setActiveFile((prev) => ({ ...prev, content }));
         setIsDirty(false);
-        addToast(`Saved ${activeFile.fileName}`, "success");
+        addToast(`Saved ${activeFileRef.current.fileName}`, "success");
+        return true;
       } else {
         addToast(`Failed to save: ${res.error}`, "error");
+        return false;
       }
     } else {
       setActiveFile((prev) => ({ ...prev, content }));
       setIsDirty(false);
       addToast(`Saved locally`, "success");
+      return true;
     }
   };
 
@@ -221,7 +232,7 @@ export const App: React.FC = () => {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isDirty, activeFile]);
+  }, []);
 
   return (
     <div id="app">

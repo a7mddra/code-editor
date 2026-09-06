@@ -11,6 +11,7 @@ import {
   StateStack,
   IRawTheme,
 } from "vscode-textmate";
+import wasmUrl from "vscode-oniguruma/release/onig.wasm?url";
 
 // Grammar loaders
 const GRAMMAR_LOADERS: Record<string, () => Promise<any>> = {
@@ -151,7 +152,7 @@ export function initTextMateEngine(initialThemeId?: string): Promise<void> {
 async function doInit(): Promise<void> {
   console.log("[TextMate] Initializing Oniguruma WASM...");
   try {
-    const wasmResponse = await fetch("./onig.wasm");
+    const wasmResponse = await fetch(wasmUrl);
     const wasmArrayBuffer = await wasmResponse.arrayBuffer();
     await loadWASM(wasmArrayBuffer);
     wasmInitialized = true;

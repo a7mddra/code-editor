@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 contextBridge.exposeInMainWorld('electronAPI', {
   openFileDialog: () => ipcRenderer.invoke('dialog:openFile'),
   readFile: (filePath: string) => ipcRenderer.invoke('file:read', filePath),
-  saveFile: (filePath: string, content: string) => ipcRenderer.invoke('file:save', { filePath, content }),
+  saveCurrentFile: (content: string) => ipcRenderer.invoke('file:save', { content }),
   saveFileAs: (defaultName: string, content: string) => ipcRenderer.invoke('file:saveAs', { defaultName, content }),
 
   showFileMenu: (bounds: { x: number, y: number }) => ipcRenderer.invoke('menu:showFile', bounds),

@@ -30,7 +30,7 @@ export interface ElectronFileResult {
 export interface ElectronAPI {
   openFileDialog: () => Promise<ElectronFileResult>;
   readFile: (filePath: string) => Promise<ElectronFileResult>;
-  saveFile: (filePath: string, content: string) => Promise<ElectronFileResult>;
+  saveCurrentFile: (content: string) => Promise<ElectronFileResult>;
   saveFileAs: (
     defaultName: string,
     content: string,

@@ -13,7 +13,7 @@ interface IdeProps {
   isDirty: boolean;
   theme: string;
   onOpenFile: () => void;
-  onSave: (content: string) => void;
+  onSave: (content: string) => Promise<boolean> | void;
   onSaveAs: (content: string) => void;
   onClose: () => void;
   onThemeChange: (themeId: string) => void;
@@ -49,6 +49,7 @@ export const Ide: React.FC<IdeProps> = ({
 
   useEffect(() => {
     if (!containerRef.current) return;
+    setGrammarLoaded(false);
 
     const editor = monaco.editor.create(containerRef.current, {
       value: file.content,
@@ -124,10 +125,13 @@ export const Ide: React.FC<IdeProps> = ({
       onDirtyChange(dirty);
     });
 
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      onSave(editor.getValue());
-      originalContentRef.current = editor.getValue();
-      onDirtyChange(false);
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, async () => {
+      const content = editor.getValue();
+      const success = await onSave(content);
+      if (success !== false) {
+        originalContentRef.current = content;
+        onDirtyChange(false);
+      }
     });
 
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyW, () => {
@@ -154,7 +158,7 @@ export const Ide: React.FC<IdeProps> = ({
       editor.dispose();
       editorRef.current = null;
     };
-  }, [file.filePath]);
+  }, [file.filePath, file.mtime]);
 
   useEffect(() => {
     setTheme(theme)
@@ -172,12 +176,14 @@ export const Ide: React.FC<IdeProps> = ({
     }
   }, [fontSize]);
 
-  const handleSaveClick = useCallback(() => {
+  const handleSaveClick = useCallback(async () => {
     if (editorRef.current) {
       const content = editorRef.current.getValue();
-      onSave(content);
-      originalContentRef.current = content;
-      onDirtyChange(false);
+      const success = await onSave(content);
+      if (success !== false) {
+        originalContentRef.current = content;
+        onDirtyChange(false);
+      }
     }
   }, [onSave, onDirtyChange]);
 

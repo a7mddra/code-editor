@@ -1,9 +1,10 @@
-import { app, BrowserWindow, ipcMain, dialog, Menu } from "electron";
+import { app, BrowserWindow, ipcMain, dialog, Menu, MenuItemConstructorOptions } from "electron";
 import path from "path";
 import fs from "fs";
 
-let mainWindow = null;
-
+let mainWindow: BrowserWindow | null = null;
+let currentFilePath: string | null = null;
+let initialFilePromise: Promise<any> | null = null;
 const SUPPORTED_EXTENSIONS = [
   "txt",
   "md",
@@ -52,26 +53,26 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
-      webSecurity: false,
+      sandbox: true,
+      webSecurity: true,
     },
     show: false,
   });
 
 
 
-  mainWindow.webContents.on(
-    "console-message",
-    (event, level, message, line, sourceId) => {
-      console.log(`[Renderer] ${message}`);
-    },
-  );
-
-  mainWindow.once("ready-to-show", () => {
-    mainWindow.show();
+  mainWindow.webContents.on("console-message", (...args: any[]) => {
+    const msg =
+      args[0] && typeof args[0] === "object" && "message" in args[0]
+        ? args[0].message
+        : args[2];
+    console.log(`[Renderer] ${msg}`);
   });
 
-  let initialFilePromise = null;
+  mainWindow.once("ready-to-show", () => {
+    mainWindow?.show();
+  });
+
   const fileArg = process.argv
     .slice(2)
     .find(
@@ -88,15 +89,6 @@ function createWindow() {
     initialFilePromise = readFileData(absPath);
   }
 
-  ipcMain.handle("app:getInitialFile", async () => {
-    if (initialFilePromise) {
-      const data = await initialFilePromise;
-      initialFilePromise = null;
-      return data;
-    }
-    return null;
-  });
-
   const devUrl = process.argv.find(
     (arg) => arg.startsWith("http://") || arg.startsWith("https://"),
   );
@@ -112,6 +104,16 @@ function createWindow() {
 }
 
 // IPC Handlers
+
+ipcMain.handle("app:getInitialFile", async () => {
+  if (initialFilePromise) {
+    const data = await initialFilePromise;
+    initialFilePromise = null;
+    return data;
+  }
+  return null;
+});
+
 
 // 1. Open File Dialog & read
 ipcMain.handle("dialog:openFile", async () => {
@@ -134,16 +136,18 @@ ipcMain.handle("dialog:openFile", async () => {
 });
 
 // 2. Read specific file (e.g. from Recent Files or drag-and-drop)
-ipcMain.handle("file:read", async (_, filePath) => {
+ipcMain.handle("file:read", async (_, filePath: string) => {
   return await readFileData(filePath);
 });
 
-async function readFileData(filePath) {
+async function readFileData(filePath: string) {
   try {
     const stats = await fs.promises.stat(filePath);
     const content = await fs.promises.readFile(filePath, "utf-8");
     const fileName = path.basename(filePath);
     const extension = path.extname(filePath).replace(".", "").toLowerCase();
+
+    currentFilePath = filePath;
 
     return {
       canceled: false,
@@ -158,25 +162,25 @@ async function readFileData(filePath) {
     console.error("Error reading file:", error);
     return {
       canceled: false,
-      error: error.message || "Failed to read file",
+      error: error instanceof Error ? error.message : "Failed to read file",
     };
   }
 }
 
 // 3. Save to existing file
-ipcMain.handle("file:save", async (_, { filePath, content }) => {
+ipcMain.handle("file:save", async (_, { content }) => {
   try {
-    if (!filePath) {
+    if (!currentFilePath) {
       throw new Error("No file path provided for saving");
     }
-    await fs.promises.writeFile(filePath, content, "utf-8");
-    const stats = await fs.promises.stat(filePath);
+    await fs.promises.writeFile(currentFilePath, content, "utf-8");
+    const stats = await fs.promises.stat(currentFilePath);
     return {
       success: true,
       mtime: stats.mtimeMs,
       size: stats.size,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving file:", error);
     return {
       success: false,
@@ -212,6 +216,8 @@ ipcMain.handle("file:saveAs", async (_, { defaultName, content }) => {
     const fileName = path.basename(filePath);
     const extension = path.extname(filePath).replace(".", "").toLowerCase();
 
+    currentFilePath = filePath;
+
     return {
       canceled: false,
       success: true,
@@ -225,7 +231,7 @@ ipcMain.handle("file:saveAs", async (_, { defaultName, content }) => {
     return {
       canceled: false,
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : "Failed to save file",
     };
   }
 });
@@ -248,7 +254,7 @@ app.on("activate", () => {
 ipcMain.handle("menu:showFile", (event, bounds) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (!win) return;
-  const template = [
+  const template: MenuItemConstructorOptions[] = [
     { label: "Open File", accelerator: "CmdOrCtrl+O", click: () => win.webContents.send("menu:action", "openFile") },
     { label: "Save", accelerator: "CmdOrCtrl+S", click: () => win.webContents.send("menu:action", "save") },
     { label: "Save As...", accelerator: "CmdOrCtrl+Shift+S", click: () => win.webContents.send("menu:action", "saveAs") },
@@ -262,7 +268,7 @@ ipcMain.handle("menu:showFile", (event, bounds) => {
 ipcMain.handle("menu:showEdit", (event, bounds) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (!win) return;
-  const template = [
+  const template: MenuItemConstructorOptions[] = [
     { label: "Undo", accelerator: "CmdOrCtrl+Z", click: () => win.webContents.send("menu:action", "undo") },
     { label: "Redo", accelerator: "CmdOrCtrl+Shift+Z", click: () => win.webContents.send("menu:action", "redo") },
     { type: "separator" },
@@ -279,13 +285,13 @@ ipcMain.handle("menu:showEdit", (event, bounds) => {
 ipcMain.handle("menu:showView", (event, { bounds, themes, currentTheme, isMinimap }) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   if (!win) return;
-  const themeSubmenu = Object.keys(themes).map(id => ({
+  const themeSubmenu: MenuItemConstructorOptions[] = Object.keys(themes).map(id => ({
     label: themes[id].name,
-    type: "radio",
+    type: "radio" as const,
     checked: id === currentTheme,
     click: () => win.webContents.send("menu:action", `theme:${id}`)
   }));
-  const template = [
+  const template: MenuItemConstructorOptions[] = [
     { label: "Increase Font Size", accelerator: "CmdOrCtrl+]", click: () => win.webContents.send("menu:action", "zoomIn") },
     { label: "Decrease Font Size", accelerator: "CmdOrCtrl+[", click: () => win.webContents.send("menu:action", "zoomOut") },
     { type: "separator" },
